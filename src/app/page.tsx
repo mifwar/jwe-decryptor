@@ -2,22 +2,26 @@
 
 import { useState } from "react";
 import { decryptJWT } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
   const [decrypted, setDecrypted] = useState<string>(
     "Your decrypted token will be shown here",
   );
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setIsLoading(true);
     const formData = new FormData(event.currentTarget);
     const token = formData.get("token") as string;
     const key = formData.get("key") as string;
 
     if (!token || !key) {
       setError("Please provide both token and key");
+      setIsLoading(false);
       return;
     }
 
@@ -31,6 +35,8 @@ export default function Home() {
     } catch (err) {
       setError("An error occurred while decrypting");
       console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -64,17 +70,24 @@ export default function Home() {
         </div>
         <button
           type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300"
+          disabled={isLoading}
         >
-          Decrypt
+          {isLoading ? "Decrypting..." : "Decrypt"}
         </button>
       </form>
       {error && <p className="mt-4 text-red-500">{error}</p>}
       <div className="mt-4">
         <h2 className="text-xl font-semibold mb-2">Decrypted Token:</h2>
-        <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-          {decrypted}
-        </pre>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-20">
+            <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+          </div>
+        ) : (
+          <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
+            {decrypted}
+          </pre>
+        )}
       </div>
     </div>
   );
