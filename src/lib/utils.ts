@@ -15,7 +15,7 @@ export async function encryptJWT(secretKey: string, payload: any) {
     const jwe = await new CompactEncrypt(
       new TextEncoder().encode(JSON.stringify(payload)),
     )
-      .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
+      .setProtectedHeader({ alg: "dir", enc: "A128CBC-HS256" })
       .encrypt(buffer);
 
     return jwe;
