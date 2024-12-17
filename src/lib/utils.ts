@@ -33,9 +33,9 @@ export async function decryptJWT(secretKey: string, token: string) {
     const buffer = Buffer.from(secretBytes);
     const { plaintext } = await compactDecrypt(token, buffer);
     const payload = new TextDecoder().decode(plaintext);
-    console.log("payload:", payload);
 
-    const encryptedTo = encryptJWT(secretKey, payload);
+    console.log("payload:", payload);
+    const encryptedTo = await encryptJWT(secretKey, JSON.parse(payload));
     console.log("encryptedTo:", encryptedTo);
 
     return JSON.parse(payload);
